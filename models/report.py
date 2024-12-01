@@ -4,7 +4,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
+
 class Report(BaseModel):
     gross_revenue: Decimal
-    expenses: Decimal 
+    expenses: Decimal
     net_revenue: Decimal

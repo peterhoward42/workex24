@@ -5,12 +5,14 @@ from typing import List
 
 from pydantic import BaseModel
 
+
 class IncomeOrExpense(str, Enum):
-    income = 'Income'
-    expense = 'Expense'
+    income = "Income"
+    expense = "Expense"
+
 
 class Transaction(BaseModel):
     date: datetime.date
-    category: IncomeOrExpense 
+    category: IncomeOrExpense
     amount: Decimal
     memo: str
