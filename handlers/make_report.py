@@ -19,6 +19,8 @@ def make_report() -> Report:
     expenses = sum_transactions_of_type(transactions, IncomeOrExpense.expense)
     
     net_revenue = gross_revenue - expenses
+    
+    # This try/except is primarily to reveal programming errors during development.
     try:
         report = Report(gross_revenue=gross_revenue, expenses=expenses, net_revenue=net_revenue)
     except Exception as err:
