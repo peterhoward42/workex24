@@ -11,7 +11,9 @@ def make_report() -> Report:
     transactions = retrieve_transactions()
     
     if len(transactions) == 0:
-        raise HTTPException(status_code=400, detail='Cannot generate report because there are no stored transactions - use the /transactions endpoint to put some in.')
+        raise HTTPException(
+            status_code=400, 
+            detail='Cannot generate report because there are no stored transactions - use the /transactions endpoint to put some in.')
     
     gross_revenue = sum_transactions_of_type(transactions, IncomeOrExpense.income)
     expenses = sum_transactions_of_type(transactions, IncomeOrExpense.expense)

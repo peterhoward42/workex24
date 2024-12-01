@@ -5,6 +5,11 @@ from models.transaction import Transaction
 from storage.in_memory_store import store_transactions
 
 def add_transactions(csv_data: bytes) -> List[Transaction]:
+    transactions = build_transactions(csv_data)
+    store_transactions(transactions) 
+    return transactions
+
+def build_transactions(csv_data: bytes) -> List[Transaction]:
     
     try:
         s = csv_data.decode('UTF-8')
@@ -24,9 +29,7 @@ def add_transactions(csv_data: bytes) -> List[Transaction]:
         
         transaction = parse_transaction(line)
         transactions.append(transaction)
-    
-    store_transactions(transactions)
-       
+           
     return transactions
 
 def parse_transaction(line: str) -> Transaction:
