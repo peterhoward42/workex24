@@ -29,7 +29,6 @@ def test_parse_transaction_fewer_than_four_fields():
 def test_parse_transaction_malformed_field():
     with pytest.raises(Exception) as err:
         parse_transaction("2020-07-01, XXXX, 18.77, Fuel")
-    a = str(err.value)
     expected = "400: Cannot parse one of the CSV lines. Details: 1 validation error for Transaction\ncategory\n  Input should be 'Income' or 'Expense'"
     assert expected in str(err.value)
 
@@ -62,7 +61,8 @@ def test_build_transactions_copes_with_whitespace_etc():
 
 
 def test_build_transactions_utf_encoding_problem():
-    csv = bytes([1, 2, 3])
+    csv = bytes([0xFF, 0x00])
     with pytest.raises(Exception) as err:
-        build_transactions(bytes)
-    assert "400: Cannot decode your CSV input" in str(err.value)
+        build_transactions(csv)
+    expected = "400: Cannot decode your CSV input. Details: 'utf-8' codec can't decode byte 0xff in position 0: invalid start byte"
+    assert expected in str(err.value)
