@@ -1,10 +1,14 @@
 	
 .PHONY: all
-all: black mypy test
+all: mypy rufflint ruffmt test
 
-.PHONY: black
-black:
-	black .
+.PHONY: rufflint
+rufflint:
+	ruff check --fix
+
+.PHONY: ruffmt
+ruffmt:
+	ruff format .
 
 .PHONY: mypy
 mypy:

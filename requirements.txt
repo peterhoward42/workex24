@@ -2,5 +2,4 @@ fastapi[standard]==0.115.5
 httpx
 pytest
 mypy
-black
 ruff
