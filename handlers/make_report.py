@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import HTTPException
 from models.transaction import Transaction, IncomeOrExpense
 from models.report import Report
@@ -35,8 +34,8 @@ def make_report() -> Report:
 
 
 def sum_transactions_of_type(
-    all_transactions: List[Transaction], category: IncomeOrExpense
+    all_transactions: list[Transaction], category: IncomeOrExpense
 ) -> Decimal:
     transactions = [t for t in all_transactions if t.category == category]
     amounts = [t.amount for t in transactions]
-    return sum(amounts)
+    return sum(amounts, Decimal(0))

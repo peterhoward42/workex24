@@ -1,16 +1,16 @@
-from typing import List
+import datetime
 from fastapi import HTTPException
 from models.transaction import Transaction
 from storage.in_memory_store import store_transactions
 
 
-def add_transactions(csv_data: bytes) -> List[Transaction]:
+def add_transactions(csv_data: bytes) -> list[Transaction]:
     transactions = build_transactions(csv_data)
     store_transactions(transactions)
     return transactions
 
 
-def build_transactions(csv_data: bytes) -> List[Transaction]:
+def build_transactions(csv_data: bytes) -> list[Transaction]:
 
     try:
         s = csv_data.decode("UTF-8")
@@ -44,8 +44,12 @@ def parse_transaction(line: str) -> Transaction:
             status_code=400, detail=f"Should be 4 fields, not {n_fields} ({line})"
         )
     try:
+        # We suppress type hint warnings because we are relying on Pydantic model-wide validation of these string inputs.
         transaction = Transaction(
-            date=fields[0], category=fields[1], amount=fields[2], memo=fields[3]
+            date=fields[0],  # type: ignore
+            category=fields[1],  # type: ignore
+            amount=fields[2],  # type: ignore
+            memo=fields[3],  # type: ignore
         )
     except Exception as err:
         raise HTTPException(

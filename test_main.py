@@ -54,7 +54,7 @@ def test_post_transactions_returns_errors():
     response = client.post("/transactions", files=files)
 
     # Check response is what is expected.
-    assert (400, response.status_code)
+    assert response.status_code == 400
     expected = {"detail": "Should be 4 fields, not 2 (this is, malformed csv)"}
     assert response.json() == expected
 
@@ -71,7 +71,7 @@ def test_get_report_happy_path():
     # We have to load some transactions for the /report endpoint to work.
     files = {"data": two_line_csv_file}
     response = client.post("/transactions", files=files)
-    assert (201, response.status_code)
+    assert response.status_code == 201
 
     # Now test the /report endpoint
     response = client.get("/report")
@@ -87,7 +87,7 @@ def test_get_report_returns_errors():
 
     response = client.get("/report")
 
-    assert (400, response.status_code)
+    assert response.status_code == 400
     expected = {
         "detail": "Cannot generate report because there are no stored transactions - use the /transactions endpoint to put some in."
     }

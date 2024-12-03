@@ -1,6 +1,6 @@
 from fastapi import FastAPI, File
 import uvicorn
-from typing import Annotated, List
+from typing import Annotated
 
 from models.transaction import Transaction
 from models.report import Report
@@ -20,7 +20,7 @@ app = FastAPI(title="Tax Accounts API", description=description)
 
 
 @app.post("/transactions", status_code=201, name="Upload transactions from CSV file")
-def handle_transactions(data: Annotated[bytes, File()]) -> List[Transaction]:
+def handle_transactions(data: Annotated[bytes, File()]) -> list[Transaction]:
     """
     The file you choose for '''data''' in the request body should contain lines like
     these:
