@@ -14,7 +14,6 @@ Tests for /transactions
 
 
 def test_post_transactions_happy_path():
-
     clear_storage()
 
     # Post a simple two-line csv payload.
@@ -46,7 +45,6 @@ def test_post_transactions_happy_path():
 
 
 def test_post_transactions_returns_errors():
-
     clear_storage()
 
     # Post a malformed csv payload.
@@ -65,7 +63,6 @@ Tests for /report
 
 
 def test_get_report_happy_path():
-
     clear_storage()
 
     # We have to load some transactions for the /report endpoint to work.
@@ -82,7 +79,6 @@ def test_get_report_happy_path():
 
 
 def test_get_report_returns_errors():
-
     clear_storage()
 
     response = client.get("/report")

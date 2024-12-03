@@ -10,7 +10,6 @@ def add_transactions(csv_data: bytes) -> list[Transaction]:
 
 
 def build_transactions(csv_data: bytes) -> list[Transaction]:
-
     try:
         s = csv_data.decode("UTF-8")
     except Exception as err:
