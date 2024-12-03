@@ -1,7 +1,6 @@
 import datetime
 from decimal import Decimal
 
-from fastapi import HTTPException
 import pytest
 from models.transaction import IncomeOrExpense, Transaction
 from .add_transactions import build_transactions, parse_transaction

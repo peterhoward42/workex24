@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from models.transaction import Transaction, IncomeOrExpense
 from models.report import Report
-from storage.in_memory_store import store_transactions, retrieve_transactions
+from storage.in_memory_store import retrieve_transactions
 from decimal import Decimal
 
 

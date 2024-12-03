@@ -1,4 +1,3 @@
-import datetime
 from fastapi import HTTPException
 from models.transaction import Transaction
 from storage.in_memory_store import store_transactions

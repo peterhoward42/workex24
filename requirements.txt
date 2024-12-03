@@ -3,3 +3,4 @@ httpx
 pytest
 mypy
 black
+ruff
