@@ -4,12 +4,19 @@ from storage.in_memory_store import store_transactions
 
 
 def add_transactions(csv_data: bytes) -> list[Transaction]:
+    """
+    Parses and validates a list of financial transactions from the given CSV file, stores them,
+    and returns them as a list of model instances.
+    """
     transactions = build_transactions(csv_data)
     store_transactions(transactions)
     return transactions
 
 
 def build_transactions(csv_data: bytes) -> list[Transaction]:
+    """
+    Does the parsing and validation part.
+    """
     try:
         s = csv_data.decode("UTF-8")
     except Exception as err:
@@ -35,6 +42,9 @@ def build_transactions(csv_data: bytes) -> list[Transaction]:
 
 
 def parse_transaction(line: str) -> Transaction:
+    """
+    Knows how to parse and validate single transaction.
+    """
     fields = [field.strip() for field in line.split(",")]
     n_fields = len(fields)
     if n_fields != 4:

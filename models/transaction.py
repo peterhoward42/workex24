@@ -11,6 +11,8 @@ class IncomeOrExpense(str, Enum):
 
 
 class Transaction(BaseModel):
+    """The model used to encapsulate a single transaction for both incoming requests and storage."""
+
     date: datetime.date
     category: IncomeOrExpense
     amount: Decimal

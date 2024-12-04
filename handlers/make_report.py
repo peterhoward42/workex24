@@ -6,6 +6,10 @@ from decimal import Decimal
 
 
 def make_report() -> Report:
+    """
+    Retrieves a list of transactions from storage and works out the net income from them. Returning
+    the report as a model.
+    """
     transactions = retrieve_transactions()
 
     if len(transactions) == 0:
@@ -36,6 +40,7 @@ def make_report() -> Report:
 def sum_transactions_of_type(
     all_transactions: list[Transaction], category: IncomeOrExpense
 ) -> Decimal:
+    # Just a DRY helper to do some arithmetic.
     transactions = [t for t in all_transactions if t.category == category]
     amounts = [t.amount for t in transactions]
     return sum(amounts, Decimal(0))
