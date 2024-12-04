@@ -1,11 +1,16 @@
-from fastapi import FastAPI, File
+from fastapi import FastAPI, File, Depends
 import uvicorn
 from typing import Annotated
 
-from models.transaction import Transaction
+from models.transaction import TransactionPublic
 from models.report import Report
 from handlers.add_transactions import add_transactions
 from handlers.make_report import make_report
+from storage.sqldb import get_session
+from sqlmodel import Session
+
+
+from contextlib import asynccontextmanager
 
 
 description = """
@@ -16,11 +21,22 @@ You can:
 * **Upload transactions from a CSV file**
 * **Then get a summary net-revenue report**
 """
+
+
+SessionDep = Annotated[Session, Depends(get_session)]
+
 app = FastAPI(title="Tax Accounts API", description=description)
 
 
-@app.post("/transactions", status_code=201, name="Upload transactions from CSV file")
-def handle_transactions(data: Annotated[bytes, File()]) -> list[Transaction]:
+@app.post(
+    "/transactions",
+    response_model=TransactionPublic,
+    status_code=201,
+    name="Upload transactions from CSV file",
+)
+def handle_transactions(
+    data: Annotated[bytes, File()], session: SessionDep
+) -> list[TransactionPublic]:
     """
     The file you choose for '''data''' in the request body should contain lines like
     these:
@@ -30,7 +46,8 @@ def handle_transactions(data: Annotated[bytes, File()]) -> list[Transaction]:
     2020-07-04, Income, 40.00, 347 Woodrow
     ```
     """
-    return add_transactions(data)
+    transactions = add_transactions(data, session)
+    return transactions
 
 
 @app.get("/report", name="Get a summary report")

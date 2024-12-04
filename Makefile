@@ -1,8 +1,8 @@
 	
 .PHONY: all
-all: mypy rufflint ruffmt test
+all: mypy rufflintfix ruffmt test
 
-.PHONY: rufflint
+.PHONY: rufflintfix
 rufflint:
 	ruff check --fix
 

@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from models.transaction import Transaction, IncomeOrExpense
+from models.transaction import TransactionDB, IncomeOrExpense
 from models.report import Report
 from storage.in_memory_store import retrieve_transactions
 from decimal import Decimal
@@ -34,7 +34,7 @@ def make_report() -> Report:
 
 
 def sum_transactions_of_type(
-    all_transactions: list[Transaction], category: IncomeOrExpense
+    all_transactions: list[TransactionDB], category: IncomeOrExpense
 ) -> Decimal:
     transactions = [t for t in all_transactions if t.category == category]
     amounts = [t.amount for t in transactions]

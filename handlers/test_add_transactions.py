@@ -2,17 +2,17 @@ import datetime
 from decimal import Decimal
 
 import pytest
-from models.transaction import IncomeOrExpense, Transaction
+from models.transaction import IncomeOrExpense, TransactionDB, TransactionCreate
 from .add_transactions import build_transactions, parse_transaction
 
 """
-parse_transaction() tests
+tests for parse_transaction()
 """
 
 
 def test_parse_transaction_happy_path():
     transaction = parse_transaction("2020-07-01, Expense, 18.77, Fuel")
-    assert transaction == Transaction(
+    assert transaction == TransactionCreate(
         date=datetime.date(2020, 7, 1),
         category=IncomeOrExpense.expense,
         amount=Decimal("18.77"),
@@ -29,12 +29,15 @@ def test_parse_transaction_fewer_than_four_fields():
 def test_parse_transaction_malformed_field():
     with pytest.raises(Exception) as err:
         parse_transaction("2020-07-01, XXXX, 18.77, Fuel")
-    expected = "400: Cannot parse one of the CSV lines. Details: 1 validation error for Transaction\ncategory\n  Input should be 'Income' or 'Expense'"
-    assert expected in str(err.value)
+    a = str(err.value)
+    expectedA = "400: Cannot parse one of the CSV lines. Details: 1 validation error for TransactionCreate\ncategory"
+    expectedB = "Input should be 'Income' or 'Expense' [type=enum, input_value='XXXX', input_type=str]"
+    assert expectedA in str(err.value)
+    assert expectedB in str(err.value)
 
 
 """
-build_transactions() tests
+tests for build_transactions()
 """
 
 
@@ -45,7 +48,7 @@ def test_build_transactions_happy_path():
         """
     transactions = build_transactions(csv)
     assert len(transactions) == 2
-    assert isinstance(transactions[0], Transaction)
+    assert isinstance(transactions[0], TransactionCreate)
 
 
 def test_build_transactions_copes_with_whitespace_etc():
@@ -57,7 +60,7 @@ def test_build_transactions_copes_with_whitespace_etc():
         """
     transactions = build_transactions(csv)
     assert len(transactions) == 2
-    assert isinstance(transactions[0], Transaction)
+    assert isinstance(transactions[0], TransactionCreate)
 
 
 def test_build_transactions_utf_encoding_problem():

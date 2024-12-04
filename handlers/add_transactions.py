@@ -1,15 +1,29 @@
 from fastapi import HTTPException
-from models.transaction import Transaction
-from storage.in_memory_store import store_transactions
+from sqlmodel import Session
+from models.transaction import (
+    TransactionCreate,
+    TransactionPublic,
+)
+from storage.sqldb import store_transactions
+
+#  TODO should become redundant
+# from storage.in_memory_store import store_transactions
 
 
-def add_transactions(csv_data: bytes) -> list[Transaction]:
-    transactions = build_transactions(csv_data)
-    store_transactions(transactions)
-    return transactions
+def add_transactions(csv_data: bytes, session: Session) -> list[TransactionPublic]:
+    """
+    Return type is the <Public> variant of a Transaction - suitable for a JSON response.
+    """
+    created_transactions = build_transactions(csv_data)
+    transactions_for_response = store_transactions(created_transactions, session)
+    return transactions_for_response
 
 
-def build_transactions(csv_data: bytes) -> list[Transaction]:
+def build_transactions(csv_data: bytes) -> list[TransactionCreate]:
+    """
+    Return type is the <Create> variant of a Transaction - suitable for
+    constructing one from JSON input.
+    """
     try:
         s = csv_data.decode("UTF-8")
     except Exception as err:
@@ -19,7 +33,7 @@ def build_transactions(csv_data: bytes) -> list[Transaction]:
 
     lines = s.splitlines()
 
-    transactions = []
+    transactions: list[TransactionCreate] = []
     for line in lines:
         if len(line) == 0:
             continue
@@ -34,7 +48,11 @@ def build_transactions(csv_data: bytes) -> list[Transaction]:
     return transactions
 
 
-def parse_transaction(line: str) -> Transaction:
+def parse_transaction(line: str) -> TransactionCreate:
+    """
+    Return type is the <Create> variant of a Transaction - suitable for
+    constructing one from JSON input.
+    """
     fields = [field.strip() for field in line.split(",")]
     n_fields = len(fields)
     if n_fields != 4:
@@ -43,7 +61,7 @@ def parse_transaction(line: str) -> Transaction:
         )
     try:
         # We suppress type hint warnings because we are relying on Pydantic model-wide validation of these string inputs.
-        transaction = Transaction(
+        transaction = TransactionCreate(
             date=fields[0],  # type: ignore
             category=fields[1],  # type: ignore
             amount=fields[2],  # type: ignore
