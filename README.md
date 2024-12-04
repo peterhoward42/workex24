@@ -1,8 +1,8 @@
 # Context
-This code is a partially finished REST API that helps someone to upload a CSV file that lists some expenses and some incomes, and then offers another endpoint that produced a net
+This code is a partially finished REST API that helps someone to upload a CSV file that lists some expenses and some incomes, and then offers another endpoint that produces a net
 income summary from the stored transactions.
 
-The objective was to iterate from a rudimentary MVP and then provide notes and a commentary on assumptions you made, and what steps would be needed to make it production ready.
+The objective was to iterate, starting with a rudimentary MVP and then provide notes and a commentary on assumptions you made, and what steps would be needed to make it production ready.
 
 Those notes come towards the end of this README.
 
@@ -10,6 +10,8 @@ The code is centred around the FastAPI framework.
 
 
 # Create the development environment
+
+The code has been developed and tested on Python 3.13.0.
 
 ```
 mkdir foo
@@ -42,7 +44,7 @@ Serving at: http://127.0.0.1:8000
 API docs: http://127.0.0.1:8000/docs
 ```
 
-Point your browser to the API docs URL to try out the API.
+Point your browser to the API docs URL (a SwaggerUI) to try out the API.
 
 You'll find a sample CSV file at `./reference_tests/data.csv`
 
@@ -66,7 +68,7 @@ to `/report`.
 - That each POST of a set of transactions is intended to overwrite any set that might be already stored. (If not it raises questions about: keying them perhaps to one tax year, managing accidental duplication, and how the report would need to be changed)
 - That the format of dates in the uploaded CSV data is only expected be that shown in the example.
 - That the required behaviour for a validation error any one of the input CSV lines should return an error response and not store any transactions.
-- It is ok to change fields in the reports response that have a hypen (gross-revenue) to (gross_revenue). (I abandoned trying to make the ORM do the mapping)
+- It is ok to change fields in the /report response that have a hypen (gross-revenue) to (gross_revenue). (I abandoned trying to make the ORM do the mapping)
 
 # What is missing from the base requirements
 - Persistent storage. (It does have ephemeral storage)
