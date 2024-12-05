@@ -3,8 +3,8 @@ This is the entry point for a FastAPI app that defines a REST API.
 
 It is essentially a router that is expected to be deployed within an external HTTP server.
 
-Much of the API behaviour and capabilities are implied by FastAPI - taking guidance from
-comments and other annotation in this module.
+Much of the API behaviour and capabilities is inferred by FastAPI from
+type hints, docstrings, and other annotation in this module.
 
 The implied and automated behaviour includes for example:
 - Request validation
@@ -16,7 +16,7 @@ the CLI:
 - tells you which URLs it is serving on
 - reloads if you edit the source code
 - shows you request logs
- 
+
 """
 
 from fastapi import FastAPI, File
