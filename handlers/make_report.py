@@ -1,12 +1,13 @@
 from fastapi import HTTPException
-from models.transaction import TransactionDB, IncomeOrExpense
+from sqlmodel import Session
+from db_crud import retrieve_transactions
+from models.transaction import Transaction, IncomeOrExpense
 from models.report import Report
-from storage.in_memory_store import retrieve_transactions
 from decimal import Decimal
 
 
-def make_report() -> Report:
-    transactions = retrieve_transactions()
+def report(session: Session) -> Report:
+    transactions = retrieve_transactions(session)
 
     if len(transactions) == 0:
         raise HTTPException(
@@ -34,7 +35,7 @@ def make_report() -> Report:
 
 
 def sum_transactions_of_type(
-    all_transactions: list[TransactionDB], category: IncomeOrExpense
+    all_transactions: list[Transaction], category: IncomeOrExpense
 ) -> Decimal:
     transactions = [t for t in all_transactions if t.category == category]
     amounts = [t.amount for t in transactions]

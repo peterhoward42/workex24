@@ -1,16 +1,12 @@
-from fastapi import FastAPI, File, Depends
-import uvicorn
 from typing import Annotated
+from fastapi import FastAPI, File
+import uvicorn
 
-from models.transaction import TransactionPublic
+from handlers import make_report
+from handlers.add_transactions import parse_and_store_transactions
 from models.report import Report
-from handlers.add_transactions import add_transactions
-from handlers.make_report import make_report
-from storage.sqldb import get_session
-from sqlmodel import Session
-
-
-from contextlib import asynccontextmanager
+from models.transaction import Transaction
+from db_config import SessionDep
 
 
 description = """
@@ -22,21 +18,18 @@ You can:
 * **Then get a summary net-revenue report**
 """
 
-
-SessionDep = Annotated[Session, Depends(get_session)]
-
 app = FastAPI(title="Tax Accounts API", description=description)
 
 
 @app.post(
     "/transactions",
-    response_model=TransactionPublic,
+    response_model=Transaction,
     status_code=201,
     name="Upload transactions from CSV file",
 )
 def handle_transactions(
     data: Annotated[bytes, File()], session: SessionDep
-) -> list[TransactionPublic]:
+) -> list[Transaction]:
     """
     The file you choose for '''data''' in the request body should contain lines like
     these:
@@ -46,13 +39,18 @@ def handle_transactions(
     2020-07-04, Income, 40.00, 347 Woodrow
     ```
     """
-    transactions = add_transactions(data, session)
+    transactions = parse_and_store_transactions(data, session)
+
+    # We only commit the changes to the database if no exceptions have
+    # been raised during the loading of the CSV data.
+    session.commit()
     return transactions
 
 
 @app.get("/report", name="Get a summary report")
-def handle_get_report() -> Report:
-    return make_report()
+def handle_get_report(session: SessionDep) -> Report:
+    return make_report.report(session)
+    # No Db commit here - because it is purely a reading operation.
 
 
 if __name__ == "__main__":

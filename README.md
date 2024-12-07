@@ -18,7 +18,7 @@ pip install -r requirements.txt
 python migrate_db.py
 ```
 
-# Run the automated tests
+# Run the automated tests   
 
 ```
 make test
