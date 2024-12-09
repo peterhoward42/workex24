@@ -5,7 +5,7 @@ import uvicorn
 from handlers import make_report
 from handlers.add_transactions import parse_and_store_transactions
 from models.report import Report
-from models.transaction import Transaction
+from models.transaction import TransactionRequestModel, TransactionDBModel
 from db_config import SessionDep
 
 
@@ -23,13 +23,13 @@ app = FastAPI(title="Tax Accounts API", description=description)
 
 @app.post(
     "/transactions",
-    response_model=Transaction,
+    response_model=list[TransactionDBModel],
     status_code=201,
     name="Upload transactions from CSV file",
 )
 def handle_transactions(
     data: Annotated[bytes, File()], session: SessionDep
-) -> list[Transaction]:
+) -> list[TransactionDBModel]:
     """
     The file you choose for '''data''' in the request body should contain lines like
     these:

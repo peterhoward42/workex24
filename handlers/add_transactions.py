@@ -2,21 +2,18 @@ from fastapi import HTTPException
 from sqlmodel import Session
 
 from db_crud import store_transactions
-from models.transaction import Transaction
+from models.transaction import TransactionDBModel, TransactionRequestModel
 
 
 def parse_and_store_transactions(
     csv_data: bytes, session: Session
-) -> list[Transaction]:
-    """
-    Return type is the <Public> variant of a Transaction - suitable for a JSON response.
-    """
-    transactions = build_transactions(csv_data)
-    store_transactions(transactions, session)
-    return transactions
+) -> list[TransactionDBModel]:
+    transaction_requests = build_transactions(csv_data)
+    transactions_from_db = store_transactions(transaction_requests, session)
+    return transactions_from_db
 
 
-def build_transactions(csv_data: bytes) -> list[Transaction]:
+def build_transactions(csv_data: bytes) -> list[TransactionRequestModel]:
     try:
         s = csv_data.decode("UTF-8")
     except Exception as err:
@@ -26,7 +23,7 @@ def build_transactions(csv_data: bytes) -> list[Transaction]:
 
     lines = s.splitlines()
 
-    transactions: list[Transaction] = []
+    transactions: list[TransactionRequestModel] = []
     for line in lines:
         if len(line) == 0:
             continue
@@ -41,7 +38,7 @@ def build_transactions(csv_data: bytes) -> list[Transaction]:
     return transactions
 
 
-def parse_transaction(line: str) -> Transaction:
+def parse_transaction(line: str) -> TransactionRequestModel:
     """
     Return type is the <Create> variant of a Transaction - suitable for
     constructing one from JSON input.
@@ -54,15 +51,18 @@ def parse_transaction(line: str) -> Transaction:
         )
     try:
         # We suppress type hint warnings because we are relying on Pydantic model-wide validation of these string inputs.
-        transaction = Transaction(
+
+        # TODO Does this validate?
+        transaction_request = TransactionRequestModel(
             date=fields[0],  # type: ignore
             category=fields[1],  # type: ignore
             amount=fields[2],  # type: ignore
             memo=fields[3],  # type: ignore
         )
+
     except Exception as err:
         raise HTTPException(
             status_code=400,
-            detail=f"Cannot parse one of the CSV lines. Details: {str(err)}",
+            detail=f"Hit a problem with one of the CSV lines. Details: {str(err)}",
         )
-    return transaction
+    return transaction_request

@@ -2,7 +2,7 @@ import datetime
 from decimal import Decimal
 
 import pytest
-from models.transaction import IncomeOrExpense, TransactionDB, TransactionCreate
+from models.transaction import IncomeOrExpense, TransactionRequestModel
 from .add_transactions import build_transactions, parse_transaction
 
 """
@@ -12,7 +12,7 @@ tests for parse_transaction()
 
 def test_parse_transaction_happy_path():
     transaction = parse_transaction("2020-07-01, Expense, 18.77, Fuel")
-    assert transaction == TransactionCreate(
+    assert transaction == TransactionRequestModel(
         date=datetime.date(2020, 7, 1),
         category=IncomeOrExpense.expense,
         amount=Decimal("18.77"),
@@ -30,8 +30,8 @@ def test_parse_transaction_malformed_field():
     with pytest.raises(Exception) as err:
         parse_transaction("2020-07-01, XXXX, 18.77, Fuel")
     a = str(err.value)
-    expectedA = "400: Cannot parse one of the CSV lines. Details: 1 validation error for TransactionCreate\ncategory"
-    expectedB = "Input should be 'Income' or 'Expense' [type=enum, input_value='XXXX', input_type=str]"
+    expectedA = "400: Hit a problem with one of the CSV lines. Details: 1 validation error for TransactionRequestModel\ncategory"
+    expectedB = "Input should be 'Income' or 'Expense' [type=enum, input_value='XXXX"
     assert expectedA in str(err.value)
     assert expectedB in str(err.value)
 
@@ -48,7 +48,7 @@ def test_build_transactions_happy_path():
         """
     transactions = build_transactions(csv)
     assert len(transactions) == 2
-    assert isinstance(transactions[0], TransactionCreate)
+    assert isinstance(transactions[0], TransactionRequestModel)
 
 
 def test_build_transactions_copes_with_whitespace_etc():
@@ -60,7 +60,7 @@ def test_build_transactions_copes_with_whitespace_etc():
         """
     transactions = build_transactions(csv)
     assert len(transactions) == 2
-    assert isinstance(transactions[0], TransactionCreate)
+    assert isinstance(transactions[0], TransactionRequestModel)
 
 
 def test_build_transactions_utf_encoding_problem():

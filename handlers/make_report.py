@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlmodel import Session
 from db_crud import retrieve_transactions
-from models.transaction import Transaction, IncomeOrExpense
+from models.transaction import TransactionDBModel, IncomeOrExpense
 from models.report import Report
 from decimal import Decimal
 
@@ -35,7 +35,7 @@ def report(session: Session) -> Report:
 
 
 def sum_transactions_of_type(
-    all_transactions: list[Transaction], category: IncomeOrExpense
+    all_transactions: list[TransactionDBModel], category: IncomeOrExpense
 ) -> Decimal:
     transactions = [t for t in all_transactions if t.category == category]
     amounts = [t.amount for t in transactions]

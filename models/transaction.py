@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 
 from sqlmodel import Field, SQLModel
-from ksuid import Ksuid
+from uuid import UUID, uuid4
 
 
 class IncomeOrExpense(str, Enum):
@@ -11,19 +11,27 @@ class IncomeOrExpense(str, Enum):
     expense = "Expense"
 
 
-class Transaction(SQLModel, table=True):
+class TransactionRequestModel(SQLModel):
     """
-    The model used for the database - as declared by table=True.
-
-    None of the fields are suitable to mark as Index fields - but Field does
-    support notation to make it Indexable.
+    The model used to capture input data.
+    Note the absence of an <uuid> field.
     """
 
-    # Chosen to use KSUID type for id field so they can be constructed before
-    # they reach the database. And so the database can hold two transactions that
-    # otherwise would be the same.
-    id: str = Field(default=Ksuid(), primary_key=True)
     date: datetime.date
     category: IncomeOrExpense
     amount: Decimal
     memo: str
+
+
+class TransactionDBModel(TransactionRequestModel, table=True):
+    """
+    The model used for the database.
+    Note the table=True parameter.
+    """
+
+    """
+    Use UUID type for uuid field so they can be constructed
+    at construction-time (before they reach the database).
+    And to make it harder to create a spurious value (than an int).
+    """
+    id: UUID = Field(default_factory=uuid4, primary_key=True)

@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
+from sqlmodel import SQLModel
 
 from main import app
+from models.transaction import TransactionDBModel
 
 # from storage.in_memory_store import retrieve_transactions, clear_storage
 
@@ -22,26 +24,20 @@ def test_post_transactions_happy_path():
 
     # Check response is what is expected.
     assert response.status_code == 201
-    expected = [
-        {
-            "date": "2020-07-01",
-            "category": "Expense",
-            "amount": "18.77",
-            "memo": "Fuel§",
-        },
-        {
-            "date": "2020-07-04",
-            "category": "Income",
-            "amount": "40.00",
-            "memo": "347 Woodrow",
-        },
-    ]
-    assert response.json() == expected
 
-    # TODO restore these below.
-    # Check the transactions got stored.
-    # stored = retrieve_transactions()
-    # assert stored[1].amount == Decimal("40.00")
+    # Should be two items
+    the_json = response.json()
+
+    assert len(the_json) == 2
+
+    # Check a sample from the list of transactions in the response,
+    # can be round-trip validated into a TransactionDBModel.
+    #
+    # It will throw an exception if the validation fails.
+    sample = the_json[1]
+    TransactionDBModel.model_validate(sample)
+
+    # TODO check it also got stored
 
 
 def test_post_transactions_returns_errors():

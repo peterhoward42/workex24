@@ -31,7 +31,7 @@ def get_session():
 
     The result is that a distinct, single session is associated with each each request.
     """
-    with Session(engine) as session:
+    with Session(engine, expire_on_commit=False) as session:
         yield session
 
 
