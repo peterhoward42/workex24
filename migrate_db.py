@@ -1,4 +1,4 @@
-from db_config import engine
+from db.db_config import engine
 from sqlmodel import SQLModel
 
 """

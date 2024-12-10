@@ -2,6 +2,10 @@
 .PHONY: all
 all: mypy rufflintfix ruffmt test
 
+.PHONY: mypy
+mypy:
+	mypy .
+
 .PHONY: rufflintfix
 rufflint:
 	ruff check --fix
@@ -9,10 +13,6 @@ rufflint:
 .PHONY: ruffmt
 ruffmt:
 	ruff format .
-
-.PHONY: mypy
-mypy:
-	mypy .
 
 .PHONY: test
 test:

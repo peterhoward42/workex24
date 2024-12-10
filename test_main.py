@@ -1,6 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlmodel import SQLModel
 
+from db.db_crud import retrieve_transactions
 from main import app
 from models.transaction import TransactionDBModel
 
@@ -15,8 +16,6 @@ Tests for /transactions
 
 
 def test_post_transactions_happy_path():
-    # clear_storage()
-
     # Post a simple two-line csv payload.
     files = {"data": two_line_csv_file}
 
@@ -36,8 +35,6 @@ def test_post_transactions_happy_path():
     # It will throw an exception if the validation fails.
     sample = the_json[1]
     TransactionDBModel.model_validate(sample)
-
-    # TODO check it also got stored
 
 
 def test_post_transactions_returns_errors():
@@ -59,8 +56,6 @@ Tests for /report
 
 
 def test_get_report_happy_path():
-    # clear_storage()
-
     # We have to load some transactions for the /report endpoint to work.
     files = {"data": two_line_csv_file}
     response = client.post("/transactions", files=files)
@@ -70,13 +65,23 @@ def test_get_report_happy_path():
     response = client.get("/report")
 
     assert response.status_code == 200
-    expected = {"gross_revenue": "40.00", "expenses": "18.77", "net_revenue": "21.23"}
+    a = response.json()
+    expected = {
+        "gross_revenue": "40.0000000000",
+        "expenses": "18.7700000000",
+        "net_revenue": "21.2300000000",
+    }
     assert response.json() == expected
 
 
 def test_get_report_returns_errors():
-    # clear_storage()
+    # We have to re initialise the database to empty by posting an empty transaction
+    # payload first.
+    files = {"data": ""}
+    response = client.post("/transactions", files=files)
+    assert response.status_code == 201
 
+    # Now try get /report to make sure it errors.
     response = client.get("/report")
 
     assert response.status_code == 400

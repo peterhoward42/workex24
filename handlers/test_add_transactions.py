@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 from models.transaction import IncomeOrExpense, TransactionRequestModel
-from .add_transactions import build_transactions, parse_transaction
+from handlers.add_transactions import build_transactions, parse_transaction
 
 """
 tests for parse_transaction()

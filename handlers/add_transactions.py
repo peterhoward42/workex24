@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlmodel import Session
 
-from db_crud import store_transactions
+from db.db_crud import store_transactions
 from models.transaction import TransactionDBModel, TransactionRequestModel
 
 
@@ -9,8 +9,8 @@ def parse_and_store_transactions(
     csv_data: bytes, session: Session
 ) -> list[TransactionDBModel]:
     transaction_requests = build_transactions(csv_data)
-    transactions_from_db = store_transactions(transaction_requests, session)
-    return transactions_from_db
+    db_transactions = store_transactions(transaction_requests, session)
+    return db_transactions
 
 
 def build_transactions(csv_data: bytes) -> list[TransactionRequestModel]:

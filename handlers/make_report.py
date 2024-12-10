@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlmodel import Session
-from db_crud import retrieve_transactions
+from db.db_crud import retrieve_transactions
 from models.transaction import TransactionDBModel, IncomeOrExpense
 from models.report import Report
 from decimal import Decimal

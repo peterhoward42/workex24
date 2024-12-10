@@ -6,7 +6,7 @@ from handlers import make_report
 from handlers.add_transactions import parse_and_store_transactions
 from models.report import Report
 from models.transaction import TransactionRequestModel, TransactionDBModel
-from db_config import SessionDep
+from db.db_config import SessionDep
 
 
 description = """
