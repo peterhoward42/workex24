@@ -5,6 +5,8 @@ from sqlalchemy import delete, select
 
 
 """
+This module isolates the database crud operations to a single place.
+
 Note the functions in this module DO NOT COMMIT the database changes.
 Because the commit properly belongs at a higher
 where the context-managed session lifecycle is managed.
@@ -29,7 +31,7 @@ def store_transactions(
     Replaces any transactions in the database with the given transactions.
     """
 
-    # Remove existing rows.
+    # Remove existing rows (the declared contract).
     clear(session)
 
     db_transactions: list[TransactionDBModel] = []

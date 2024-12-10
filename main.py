@@ -8,6 +8,13 @@ from models.report import Report
 from models.transaction import TransactionRequestModel, TransactionDBModel
 from db.db_config import SessionDep
 
+"""
+This is the entry point module for the FastAPI API implementation.
+
+It is primarily a router, intended to be deployed inside an external
+server. (See if __name__ == "__main__":) below.
+"""
+
 
 description = """
 Tax Accounts API helps you generate a tax submission. 🚀

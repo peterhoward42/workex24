@@ -3,7 +3,7 @@ We create some module-scope, singleton artefacts to provide global access to the
 """
 
 from typing import Annotated
-from sqlmodel import SQLModel, create_engine, Session
+from sqlmodel import create_engine, Session
 from fastapi import Depends
 
 sqlite_file_name = "database.db"
@@ -19,17 +19,15 @@ def get_session():
 
     The reason the yield is placed inside the with-as context manager,
     is so the __exit__ method of the context manager is not triggered
-    at the time the yield is done - which it WOULD be if a return was used
-    instead. I.e. the session continues to live while the context manager is
+    at the time the yield is done - which it WOULD be if a return was used.
+    I.e. the session continues to live while the context manager is
     paused.
 
     We can presume that the Session's __exit__ method returns the underlying
     connection to the connect pool.
 
-    The call to the Session's __exit__ method is deferred until FastAPI
-    calls get_session() for next incoming request.
-
-    The result is that a distinct, single session is associated with each each request.
+    FastAPI obtains a session for each incoming request and disposes of it when that
+    request has completed.
     """
     with Session(engine, expire_on_commit=False) as session:
         yield session

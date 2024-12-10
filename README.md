@@ -1,4 +1,17 @@
+# Context
+This code implements a REST API that helps you to upload a CSV file that lists some expenses and some incomes, and then offers another endpoint that produces a net
+income summary from the stored transactions.
+
+The objective was to iterate, starting with a rudimentary MVP and then provide notes and a commentary on assumptions you made, and what steps would be needed to make it production ready.
+
+Those notes come towards the end of this README.
+
+The code is centred around the FastAPI framework.
+
+
 # Create the development environment
+
+The code has been developed and tested on Python 3.13.0.
 
 ```
 mkdir foo
@@ -12,13 +25,7 @@ pip install -r requirements.txt
 
 ```
 
-# Initialise the database
-
-```
-python migrate_db.py
-```
-
-# Run the automated tests   
+# Run the automated tests
 
 ```
 make test
@@ -37,7 +44,7 @@ Serving at: http://127.0.0.1:8000
 API docs: http://127.0.0.1:8000/docs
 ```
 
-Point your browser to the API docs URL to try out the API.
+Point your browser to the API docs URL (a SwaggerUI) to try out the API.
 
 You'll find a sample CSV file at `./reference_tests/data.csv`
 
@@ -56,3 +63,41 @@ cd reference_tests
 You should see the set of transactions loaded by a POST request 
 to `/transactions`, and then a net income summary from the GET request
 to `/report`.
+
+# Assumptions Made
+- That each POST of a set of transactions is intended to overwrite any previously saved transactions. (If not it raises questions about: keying them perhaps to one tax year, managing accidental duplication, and how the report would need to be changed)
+- That the format of dates in the uploaded CSV data is the format shown in the example.
+- That none of the transactions should be stored if there is any validation error of the input file.
+- It is ok to replace hyphens in the expected fields of the /report response to underscores. I.e. gross-revenue -> gross_revenue. (I abandoned trying to make the ORM do the mapping)
+
+# Requirements ambiguity (duplicate transactions)
+It is unclear how to handle duplicate transactions in the uploaded CSV data. The subtlety is that they might be intentional, given that the date field only specifies the day, not the time.
+
+The choices are:
+- Treat it as an error
+- Include a warning in the reponse(s)
+- Accept duplicates silently
+- Add a mandatory parameter to the /transactions request to choose the behaviour.
+
+The API developer should not make this decision - it is a product / client question.
+
+# TODOs
+- Make the validation of the Expense vs Income field case insensitive
+- A more robust and machine-readable contract for error responses
+
+# What changes would be needed for Production
+- Serving on HTTPS and the associated certificate management
+- Middleware for things like Authentication and OpenTelemetry, etc.
+- A health end point to support external scaling orchestration like Kubernetes
+- freeze versions of dependencies
+- observability tooling
+- Scaling and security infrastructure
+    - likely Dockerised
+    - likely Kubernetes or serverless
+    - orchestration of database migration in combination with service lifecycle management
+    - in the case of Kubernetes it would often use Nginx as:
+        - reverse proxy
+        - TLS/SSL termination
+        - cache
+        - load balancer
+

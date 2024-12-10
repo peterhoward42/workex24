@@ -7,6 +7,10 @@ from decimal import Decimal
 
 
 def report(session: Session) -> Report:
+    """
+    Makes and returns a net-income report, by fetching the stored transactions from
+    the database and doing some arithmetic over them.
+    """
     transactions = retrieve_transactions(session)
 
     if len(transactions) == 0:
@@ -37,6 +41,10 @@ def report(session: Session) -> Report:
 def sum_transactions_of_type(
     all_transactions: list[TransactionDBModel], category: IncomeOrExpense
 ) -> Decimal:
+    """
+    A DRY helper to isolate transactions of the given category from the given list, and
+    to sum their values.
+    """
     transactions = [t for t in all_transactions if t.category == category]
     amounts = [t.amount for t in transactions]
     return sum(amounts, Decimal(0))

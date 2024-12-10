@@ -2,7 +2,16 @@ from db.db_config import engine
 from sqlmodel import SQLModel
 
 """
-This import is for its side effect.
+This module provides a main function that will create or migrate the
+database.
+
+It is NOT called on API startup so that it can be treated as a separate
+process in a horizontally scaled context.
+"""
+
+"""
+This <import *> is necessary for its side effects.
+
 It populates the SQLModel.metadata.tables class variable so the create_all() method
 knows about the tables it should detect.
 """
