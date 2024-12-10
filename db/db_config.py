@@ -5,11 +5,21 @@ We create some module-scope, singleton artefacts to provide global access to the
 from typing import Annotated
 from sqlmodel import create_engine, Session
 from fastapi import Depends
+import os
 
-sqlite_file_name = "database.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
+# Take the URL for the database connection from an environment variable
+# when it is present, otherwise set it to a local SQLite file-based database.
+#
+# The default is useful for testing and during development.
+url_from_env = os.environ.get("DATABASE_URL")
+sql_url = url_from_env if url_from_env else "sqlite:///database.db"
+
 connect_args = {"check_same_thread": False}
-engine = create_engine(sqlite_url, connect_args=connect_args)
+
+# We do not catch exceptions thrown by create_engine() delibarately. As this is
+# a boot-time error arsing from a deployment mis-configuration, and the details are
+# are useful.
+engine = create_engine(sql_url, connect_args=connect_args)
 
 
 def get_session():

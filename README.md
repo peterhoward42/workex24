@@ -27,6 +27,9 @@ pip install -r requirements.txt
 
 # Run the automated tests
 
+The development environment does not set the DATABASE_URL environment variable,
+so the tests will create amd use an SQLite file-based database at ./database.db
+
 ```
 make test
 ```
@@ -63,6 +66,14 @@ cd reference_tests
 You should see the set of transactions loaded by a POST request 
 to `/transactions`, and then a net income summary from the GET request
 to `/report`.
+
+# Configuring the API to use an external database.
+
+You specify the database connection URL in the DATABASE_URL environment variable.
+
+For example:
+
+```export DATABASE_URL="postgresql+psycopg2://user:password@hostname/database_name'"```
 
 # Assumptions Made
 - That each POST of a set of transactions is intended to overwrite any previously saved transactions. (If not it raises questions about: keying them perhaps to one tax year, managing accidental duplication, and how the report would need to be changed)
